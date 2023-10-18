@@ -22,6 +22,7 @@ const sequelize = new Sequelize(
   {
     dialect: 'mysql',
     database: 'puentegrua',
+    timezone: '-03:00'
   });
 
 // Modelos

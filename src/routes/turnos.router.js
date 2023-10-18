@@ -10,6 +10,17 @@ router.get('', async function (req, res) {
 
 });
 
+router.post('', async function (req, res) {
+    try {
+        let data = await turnosService.postNuevoTurno(req.body);
+        res
+            .status(200)
+            .json(data)
+    } catch (err) {
+        res.json(err)
+    }
+})
+
 const turnosRouter = { router };
 
 module.exports = turnosRouter;
