@@ -87,9 +87,60 @@ const getAll = async () => {
     });
 }
 
-const postNuevoTurno = async (datosTurno) => {
-    const resultado = await db.transaction(async (t) => {
+const getUnTurno = async (idTurno) => {
+    const resultado = await db.models.turnos.findOne({
+        attributes: [
+            "idTurno"
+        ],
+        include: [
+            {
+                model: db.models.detalleturno,
+                as: 'detalleturno',
+                attributes: ['idDetalleTurno', 'idTurnoAtrasado',],
+                include: [
+                    {
+                        model: db.models.turnoatrasado,
+                        as: 'turnoatrasado',
+                        attributes: ['idTurnoAtrasado']
+                    }
+                ]
+            },
+            {
+                model: db.models.estadoturno,
+                as: 'estadoturno',
+                attributes: ['idEstadoTurno'],
+            },
+        ],
+        where: {
+            idTurno: idTurno
+        }
+    })
 
+    return {
+        idTurno: resultado.dataValues.idTurno,
+        idDetalleTurno: resultado.dataValues.detalleturno.idDetalleTurno,
+        idTurnoAtrasado: resultado.dataValues.detalleturno.turnoatrasado.idTurnoAtrasado,
+        idEstadoTurno: resultado.dataValues.estadoturno.idEstadoTurno
+    }
+}
+
+const postNuevoTurno = async (datosTurno) => {
+
+    const turnoYaExistente = await db.models.detalleturno.findOne({
+        attributes: [
+            "idDetalleTurno",
+            "diaHoraInicio"
+        ],
+        where: {
+            diaHoraInicio: datosTurno.fechaInicioTurno + ' ' + datosTurno.horaTurno
+        }
+    });
+
+    if (turnoYaExistente) {
+        return { error: "Ya existe un turno con ese horario." }
+    }
+
+    const resultado = await db.transaction(async (t) => {
         const turnoAtrasado = await db.models.turnoatrasado.create({
             esAtrasado: 0,
             minutosAtrasado: 0
@@ -119,9 +170,49 @@ const postNuevoTurno = async (datosTurno) => {
     return resultado;
 }
 
+const deleteTurno = async (datosTurno) => {
+
+    const turnoExistente = await getUnTurno(datosTurno.idTurno);
+
+    // Obtener los detalles del turno para eliminar
+    if (!turnoExistente) {
+        return { error: "No existe el turno seleccionado." }
+    }
+
+    const resultado = await db.transaction(async (t) => {
+
+        const turno = await db.models.turnos.destroy({
+            where: {
+                idTurno: turnoExistente.idTurno
+            }
+        }, { transaction: t });
+
+        const estadoTurno = await db.models.estadoturno.destroy({
+            where: {
+                idEstadoTurno: turnoExistente.idEstadoTurno
+            }
+        }, { transaction: t })
+
+        const detalleTurno = await db.models.detalleturno.destroy({
+            where: {
+                idDetalleTurno: turnoExistente.idDetalleTurno
+            }
+        }, { transaction: t })
+
+        const turnoAtrasado = await db.models.turnoatrasado.destroy({
+            where: {
+                idTurnoAtrasado: turnoExistente.idTurnoAtrasado
+            }
+        }, {transaction: t})
+
+    })
+    return {message: "Turno eliminado con éxito."}
+}
+
 const turnosService = {
     getAll,
-    postNuevoTurno
+    postNuevoTurno,
+    deleteTurno
 };
 
 module.exports = turnosService;
