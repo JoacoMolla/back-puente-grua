@@ -23,7 +23,9 @@ router.post('', async function (req, res) {
 
 router.delete('', async function (req, res) {
     try {
-        let data = await turnosService.deleteTurno(req.body);
+        let data = {}
+        let filtro = req.query
+        data = await turnosService.deleteTurno(filtro.idTurno);
         res
             .status(200)
             .json(data);

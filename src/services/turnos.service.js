@@ -10,7 +10,6 @@ const getAll = async () => {
             'usuarioLegajo',
             'adminLegajo'
         ],
-        order: [['idTurno', 'ASC']],
 
         include: [
             // Detalle turno y sus pk y fk
@@ -23,8 +22,13 @@ const getAll = async () => {
                         model: db.models.turnoatrasado,
                         as: 'turnoatrasado',
                         attributes: ['idTurnoAtrasado', 'esAtrasado', 'minutosAtrasado']
+                    },
+                    {
+                        model: db.models.zonas,
+                        as: 'zona',
+                        attributes: ['idZona', 'numeroZona']
                     }
-                ]
+                ],
             },
             // Estado del turno
             {
@@ -39,7 +43,13 @@ const getAll = async () => {
                     }
                 ]
             }
-        ]
+        ],
+        order: [[
+            //{model: db.models.turno, as: 'turnos'},
+            {model: db.models.detalleturno, as: 'detalleturno'},
+            'diaHoraInicio',
+            'ASC'
+        ]],
     });
     /*
     Return sin usar
@@ -83,6 +93,9 @@ const getAll = async () => {
             nombreEstadoTurno: {
                 nombre: t.dataValues.estadoturno.nombreestadoturno.nombre
             },
+            zonaInicial: {
+                nroZonaInicial: t.dataValues.detalleturno.zona.dataValues.numeroZona
+            }
         }
     });
 }
@@ -147,7 +160,7 @@ const postNuevoTurno = async (datosTurno) => {
         }, { transaction: t });
 
         const detalleTurno = await db.models.detalleturno.create({
-            diaHoraInicio: datosTurno.fechaInicioTurno + ' ' + datosTurno.horaTurno,
+            diaHoraInicio: new Date(datosTurno.fechaInicioTurno + ' ' + datosTurno.horaTurno),
             idTurnoAtrasado: turnoAtrasado.dataValues.idTurnoAtrasado,
             idZonaInicio: datosTurno.zonaInicial
         }, { transaction: t });
@@ -172,13 +185,13 @@ const postNuevoTurno = async (datosTurno) => {
 
 const deleteTurno = async (datosTurno) => {
 
-    const turnoExistente = await getUnTurno(datosTurno.idTurno);
+    const turnoExistente = await getUnTurno(datosTurno);
+    console.log(turnoExistente)
 
     // Obtener los detalles del turno para eliminar
     if (!turnoExistente) {
-        return { error: "No existe el turno seleccionado." }
+        return { message: "No existe el turno seleccionado." }
     }
-
     const resultado = await db.transaction(async (t) => {
 
         const turno = await db.models.turnos.destroy({
