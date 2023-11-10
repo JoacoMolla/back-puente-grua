@@ -46,7 +46,7 @@ const getAll = async () => {
         ],
         order: [[
             //{model: db.models.turno, as: 'turnos'},
-            {model: db.models.detalleturno, as: 'detalleturno'},
+            { model: db.models.detalleturno, as: 'detalleturno' },
             'diaHoraInicio',
             'ASC'
         ]],
@@ -186,7 +186,6 @@ const postNuevoTurno = async (datosTurno) => {
 const deleteTurno = async (datosTurno) => {
 
     const turnoExistente = await getUnTurno(datosTurno);
-    console.log(turnoExistente)
 
     // Obtener los detalles del turno para eliminar
     if (!turnoExistente) {
@@ -216,16 +215,46 @@ const deleteTurno = async (datosTurno) => {
             where: {
                 idTurnoAtrasado: turnoExistente.idTurnoAtrasado
             }
-        }, {transaction: t})
+        }, { transaction: t })
 
     })
-    return {message: "Turno eliminado con éxito."}
+    return { message: "Turno eliminado con éxito." }
+}
+
+const updateTurnoCancelado = async (datosTurno, descripcion) => {
+    const turnoExistente = await getUnTurno(datosTurno);
+
+    if (!turnoExistente) {
+        return { message: "No existe el turno seleccionado." }
+    }
+
+    /**
+    Query de MySQL
+    update estadoturno e
+    join turnos t on (t.idEstadoTurno = e.idEstadoTurno)
+    set descripcion = 'Turno cancelado', idNombreEstadoTurno = 2
+    where t.idTurno = 23
+     */
+
+    const resultado = await db.transaction(async (t) => {
+        const estadoTurno = await db.models.estadoturno.update(
+            {
+                descripcion: descripcion,
+                idNombreEstadoTurno: 2
+            },
+            {
+                where: {idEstadoTurno: datosTurno}
+            }, { transaction: t })
+    })
+
+    return { message: "Turno cancelado con éxito." }
 }
 
 const turnosService = {
     getAll,
     postNuevoTurno,
-    deleteTurno
+    deleteTurno,
+    updateTurnoCancelado
 };
 
 module.exports = turnosService;
