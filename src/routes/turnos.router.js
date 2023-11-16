@@ -37,7 +37,8 @@ router.delete('', async function (req, res) {
 router.put('', async function (req, res) {
     try {
         let data = {};
-        let datos = req.query;
+        let datos = req.body.params;
+        console.log(datos)
         data = await turnosService.updateTurnoCancelado(datos.idTurno, datos.descripcion);
         res
             .status(200)
