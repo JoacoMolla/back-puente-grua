@@ -137,19 +137,46 @@ const getUnTurno = async (idTurno) => {
     }
 }
 
+const getTurnoNoAtrasado = async (horaInicio) => {
+    const resultado = await db.models.turnos.findOne({
+        attributes: [
+            "idTurno"
+        ],
+        include: [
+            {
+                model: db.models.estadoturno,
+                as: 'estadoturno',
+                attributes: ['idEstadoTurno'],
+                where: {
+                    idNombreEstadoTurno: [1, 3]
+                }
+            },
+            {
+                model: db.models.detalleturno,
+                as: 'detalleturno',
+                attributes: ['diaHoraInicio'],
+                where: {
+                    diaHoraInicio: horaInicio
+                }
+            }
+        ]
+    })
+
+    if (!resultado) {
+        return null
+    }
+
+    return {
+        idTurno: resultado.dataValues.idTurno
+    }
+}
+
 const postNuevoTurno = async (datosTurno) => {
 
-    const turnoYaExistente = await db.models.detalleturno.findOne({
-        attributes: [
-            "idDetalleTurno",
-            "diaHoraInicio"
-        ],
-        where: {
-            diaHoraInicio: datosTurno.fechaInicioTurno + ' ' + datosTurno.horaTurno
-        }
-    });
+    const turnoNoCancelados = await getTurnoNoAtrasado(new Date(datosTurno.fechaInicioTurno
+        + ' ' + datosTurno.horaTurno));
 
-    if (turnoYaExistente) {
+    if (turnoNoCancelados) {
         return { error: "Ya existe un turno con ese horario." }
     }
 
@@ -222,6 +249,7 @@ const deleteTurno = async (datosTurno) => {
 }
 
 const updateTurnoCancelado = async (datosTurno, descripcion) => {
+    console.log(datosTurno)
     const turnoExistente = await getUnTurno(datosTurno);
 
     if (!turnoExistente) {
@@ -243,18 +271,88 @@ const updateTurnoCancelado = async (datosTurno, descripcion) => {
                 idNombreEstadoTurno: 2
             },
             {
-                where: {idEstadoTurno: datosTurno}
+                where: { idEstadoTurno: datosTurno }
             }, { transaction: t })
     })
 
     return { message: "Turno cancelado con éxito." }
 }
 
+const updateTurnoEjecutado = async (datosTurno, descripcion) => {
+    const turnoExistente = await getUnTurno(datosTurno);
+
+    if (!turnoExistente) {
+        return { message: "No existe el turno seleccionado." }
+    }
+
+    const resultado = await db.transaction(async (t) => {
+        const estadoTurno = await db.models.estadoturno.update(
+            {
+                descripcion: descripcion,
+                idNombreEstadoTurno: 3
+            },
+            {
+                where: { idEstadoTurno: datosTurno }
+            }, { transaction: t })
+    })
+
+    return { message: "Turno ejecutado con éxito." }
+}
+
+const findAllTurnosCreados = async () => {
+    const allTurnos = await db.models.turnos.findAll({
+        attributes: [
+            'idTurno',
+        ],
+        include: [
+            {
+                model: db.models.detalleturno,
+                as: 'detalleturno',
+                attributes: ['diaHoraInicio']
+            },
+            {
+                model: db.models.estadoturno,
+                as: 'estadoturno',
+                attributes: ['idEstadoTurno'],
+                where: {
+                    idNombreEstadoTurno: [1]
+                }
+            }
+        ]
+    })
+
+    return allTurnos.map((t) => {
+        return {
+            idTurno: t.dataValues.idTurno,
+            diaHoraInicio: t.dataValues.detalleturno.diaHoraInicio
+        }
+    })
+
+}
+
+const getSiguiente = async () => {
+//  terminar
+    // const fechaHoraActual = new Date();
+    // const allTurnosCreados = await findAllTurnosCreados();
+    // let turnoSiguiente = {};
+    // for (const t of allTurnosCreados) {
+    //     if (t.diaHoraInicio > fechaHoraActual) {
+    //         turnoSiguiente = t;
+    //     }
+    // }
+
+    // return turnoSiguiente;
+
+
+}
+
 const turnosService = {
     getAll,
     postNuevoTurno,
     deleteTurno,
-    updateTurnoCancelado
+    updateTurnoCancelado,
+    updateTurnoEjecutado,
+    getSiguiente
 };
 
 module.exports = turnosService;

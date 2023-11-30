@@ -34,11 +34,11 @@ router.delete('', async function (req, res) {
     }
 })
 
-router.put('', async function (req, res) {
+router.put('/cancelar', async function (req, res) {
     try {
         let data = {};
         let datos = req.body.params;
-        console.log(datos)
+        console.log(req.body)
         data = await turnosService.updateTurnoCancelado(datos.idTurno, datos.descripcion);
         res
             .status(200)
@@ -46,6 +46,26 @@ router.put('', async function (req, res) {
     } catch (err) {
         res.json(err)
     }
+})
+
+router.put('/ejecutado', async function (req, res) {
+    try {
+        let data = {};
+        let datos = req.body;
+        data = await turnosService.updateTurnoEjecutado(datos.idTurno, datos.descripcion);
+        res
+            .status(200)
+            .json(data);
+    } catch (err) {
+        res.json(err)
+    }
+})
+
+router.get('/siguiente', async function (req, res) {
+    let data = {};
+
+    data = await turnosService.getSiguiente();
+    res.json(data);
 })
 
 const turnosRouter = { router };
