@@ -371,7 +371,7 @@ const findAllTurnosCreadosParaHoy = async () => {
 const getSiguiente = async () => {
     const allTurnosCreados = await findAllTurnosCreadosParaHoy();
     if (allTurnosCreados.length === 0) {
-        return { error: "No hay turnos creados para hoy." };	
+        return { message: "No hay turnos creados para hoy." };	
     }
 
     console.log(allTurnosCreados)
