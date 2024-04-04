@@ -81,7 +81,19 @@ const getAll = async () => {
         }
     }
     */
-    return resultado.map((t) => {
+    fechaActual = new Date();
+    return resultado
+    .filter((t) => { // Filtra todos los turnos que sean solamente para hoy
+        fechaInicioTurno = new Date(t.dataValues.detalleturno.diaHoraInicio);
+        return (
+            fechaActual.getDate() == fechaInicioTurno.getDate() &&
+            fechaActual.getMonth() == fechaInicioTurno.getMonth() &&
+            fechaActual.getFullYear() == fechaInicioTurno.getFullYear() &&
+            fechaActual.getHours() >= fechaInicioTurno.getHours() &&
+            fechaActual.getMinutes() <= fechaInicioTurno.getMinutes()
+        )
+    })
+    .map((t) => {
         return {
             turno: {
                 idTurno: t.dataValues.idTurno,
@@ -299,7 +311,8 @@ const updateTurnoEjecutado = async (datosTurno, descripcion) => {
     return { message: "Turno ejecutado con éxito." }
 }
 
-const findAllTurnosCreados = async () => {
+const findAllTurnosCreadosParaHoy = async () => {
+    fechaActual = new Date();
     const allTurnos = await db.models.turnos.findAll({
         attributes: [
             'idTurno',
@@ -308,7 +321,19 @@ const findAllTurnosCreados = async () => {
             {
                 model: db.models.detalleturno,
                 as: 'detalleturno',
-                attributes: ['diaHoraInicio']
+                attributes: ['diaHoraInicio', 'idZonaInicio'],
+                include: [
+                    {
+                        model: db.models.turnoatrasado,
+                        as: 'turnoatrasado',
+                        attributes: ['idTurnoAtrasado', 'esAtrasado', 'minutosAtrasado']
+                    },
+                    {
+                        model: db.models.zonas,
+                        as: 'zona',
+                        attributes: ['idZona', 'numeroZona']
+                    }
+                ],
             },
             {
                 model: db.models.estadoturno,
@@ -321,30 +346,59 @@ const findAllTurnosCreados = async () => {
         ]
     })
 
-    return allTurnos.map((t) => {
-        return {
-            idTurno: t.dataValues.idTurno,
-            diaHoraInicio: t.dataValues.detalleturno.diaHoraInicio
-        }
+    return allTurnos
+    .filter((t) => { // Filtra todos los turnos que sean solamente para hoy
+        fechaInicioTurno = new Date(t.dataValues.detalleturno.diaHoraInicio);
+        return (
+            fechaActual.getDate() == fechaInicioTurno.getDate() &&
+            fechaActual.getMonth() == fechaInicioTurno.getMonth() &&
+            fechaActual.getFullYear() == fechaInicioTurno.getFullYear() &&
+            fechaActual.getHours() >= fechaInicioTurno.getHours() &&
+            fechaActual.getMinutes() < fechaInicioTurno.getMinutes()
+        )
     })
-
+    .map((t) => {
+            return {
+                idTurno: t.dataValues.idTurno,
+                diaHoraInicio: t.dataValues.detalleturno.diaHoraInicio,
+                idNombreEstadoTurno: 1,
+                nroZonaInicial: t.dataValues.detalleturno.zona.dataValues.numeroZona
+            }
+        }
+    )
 }
 
 const getSiguiente = async () => {
-//  terminar
-    // const fechaHoraActual = new Date();
-    // const allTurnosCreados = await findAllTurnosCreados();
-    // let turnoSiguiente = {};
-    // for (const t of allTurnosCreados) {
-    //     if (t.diaHoraInicio > fechaHoraActual) {
-    //         turnoSiguiente = t;
-    //     }
-    // }
+    const allTurnosCreados = await findAllTurnosCreadosParaHoy();
+    if (allTurnosCreados.length === 0) {
+        return { error: "No hay turnos creados para hoy." };	
+    }
 
-    // return turnoSiguiente;
+    console.log(allTurnosCreados)
 
+    let turno = allTurnosCreados[0];
+    let menorDiferenciaHoras = Math.abs((new Date(turno.diaHoraInicio) - new Date()));
+    
+    for (let i = 1; i < allTurnosCreados.length; i++) {
+        const fechaTurno = new Date(allTurnosCreados[i].diaHoraInicio);
+        const diferenciaHoras = Math.abs((fechaTurno - new Date()));
 
+        if (diferenciaHoras < menorDiferenciaHoras) {
+            turno = allTurnosCreados[i];
+            menorDiferenciaHoras = diferenciaHoras;
+        }
+    }
+    
+    return {
+        idTurno: turno.idTurno,
+        fechaHoraInicio: `${new Date(turno.diaHoraInicio).toLocaleDateString()}` + ' ' 
+        + `${new Date(turno.diaHoraInicio).toLocaleTimeString()}`,
+        idNombreEstadoTurno: 1,
+        nroZonaInicial: turno.nroZonaInicial
+
+    }
 }
+
 
 const turnosService = {
     getAll,
