@@ -220,3 +220,35 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- --------------------- datos mock ---------------------
+
+-- tipo usuario
+INSERT INTO TipoUsuario (idTipoUsuario, descripcion)
+VALUES (1, 'administrador'),
+(2, 'usuario comun');
+
+-- admin
+INSERT INTO Administrador (legajo, password, nombre, idTipoUsuario)
+VALUES (1, '1234', 'Juan', 1);
+
+-- usuario
+INSERT INTO Usuarios (legajo, nombre, apellido, email, dadoDeBaja, adminLegajo, idTipoUsuario, password)
+VALUES (2, 'Pedro', 'Casas', 'pcasas@gmail.com', 0, 1, 2, '1234');
+
+-- --------------------- zonas ---------------------
+INSERT INTO FormatoZonas (idFormatoZonas, esVigente, fechaCreacion)
+VALUES (1, 1, CURRENT_TIMESTAMP());
+
+INSERT INTO Zonas (idZona, numeroZona, idFormatoZonas)
+VALUES (1, 1, 1),
+(2, 2, 1),
+(3, 3, 1),
+(4, 4, 1);
+
+-- --------------------- estados de un turno ---------------------
+
+INSERT INTO NombreEstadoTurno (idNombreEstadoTurno, nombre)
+VALUES (1, 'Creado'),
+(2, 'Cancelado'),
+(3, 'Ejecutado');
