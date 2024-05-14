@@ -22,7 +22,7 @@ const sequelize = new Sequelize(
   {
     dialect: 'mariadb',
     host: 'localhost',
-    database: 'puentegrua',
+    database: 'PuenteGrua',
     timezone: '-03:00'
   });
 
