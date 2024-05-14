@@ -21,8 +21,8 @@ const sequelize = new Sequelize(
   // process.env.DATABASE_PASSWORD,
   {
     dialect: 'mariadb',
-    user: process.env.DATABASE_USERNAME,
-    password: process.env.DATABASE_PASSWORD,
+    user: 'root',
+    password: 'root',
     host: 'localhost',
     database: 'puentegrua',
     timezone: '-03:00'
