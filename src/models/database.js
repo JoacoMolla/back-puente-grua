@@ -23,7 +23,7 @@ const sequelize = new Sequelize(
     dialect: 'mariadb',
     user: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
-    host: localhost,
+    host: 'localhost',
     database: 'puentegrua',
     timezone: '-03:00'
   });
