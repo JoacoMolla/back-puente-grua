@@ -60,7 +60,7 @@ const TurnosAttributes = {
 }
 
 const TurnosOptions = {
-    tableName: "turnos",
+    tableName: "Turnos",
     timestamps: false
 }
 

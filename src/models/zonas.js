@@ -24,7 +24,7 @@ const ZonasAttributes = {
 }
 
 const ZonasOptions = {
-    tableName: 'zonas',
+    tableName: 'Zonas',
     timestamps: false
 }
 

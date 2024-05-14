@@ -20,7 +20,7 @@ const TipoUsuarioAttributes = {
 }
 
 const TipoUsuarioOptions = {
-    tableName: 'tipousuario',
+    tableName: 'TipoUsuario',
     timestamps: false
 }
 

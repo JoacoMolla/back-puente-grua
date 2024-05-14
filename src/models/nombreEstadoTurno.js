@@ -20,7 +20,7 @@ const NombreEstadoTurnoAttributes = {
 }
 
 const NombreEstadoTurnoOptions = {
-    tableName: 'nombreestadoturno',
+    tableName: 'NombreEstadoTurno',
     timestamps: false
 }
 

@@ -57,7 +57,7 @@ const UsuariosAttributes = {
 }
 
 const UsuariosOptions = {
-    tableName: 'usuarios',
+    tableName: 'Usuarios',
     timestamps: false
 }
 

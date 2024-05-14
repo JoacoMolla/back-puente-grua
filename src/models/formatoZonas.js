@@ -18,7 +18,7 @@ const FormatoZonasAttributes = {
 }
 
 const FormatoZonasOptions = {
-    tableName: 'formatozonas',
+    tableName: 'FormatoZonas',
     timestamps: false
 }
 

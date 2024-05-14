@@ -40,7 +40,7 @@ const DetalleTurnoAttributes = {
 }
 
 const DetalleTurnoOptions = {
-    tableName: "detalleturno",
+    tableName: "DetalleTurno",
     timestamps: false
 }
 

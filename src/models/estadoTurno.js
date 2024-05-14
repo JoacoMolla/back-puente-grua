@@ -24,7 +24,7 @@ const EstadoTurnoAttributes = {
 }
 
 const EstadoTurnoOptions = {
-    tableName: 'estadoturno',
+    tableName: 'EstadoTurno',
     timestamps: false
 }
 

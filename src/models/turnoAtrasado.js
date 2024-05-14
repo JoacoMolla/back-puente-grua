@@ -18,7 +18,7 @@ const TurnoAtrasadoAttributes = {
 }
 
 const TurnoAtrasadoOptions = {
-    tableName: 'turnoatrasado',
+    tableName: 'TurnoAtrasado',
     timestamps: false
 }
 

@@ -37,7 +37,7 @@ const SesionesAttributes = {
 }
 
 const SesionesOptions = {
-    tableName: "sesiones",
+    tableName: "Sesiones",
     timestamps: false
 }
 

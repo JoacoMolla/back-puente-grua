@@ -27,7 +27,7 @@ const AdministradorAttributes = {
 }
 
 const AdministradorOptions = {
-    tableName: 'administrador',
+    tableName: 'Administrador',
     timestamps: false
 }
 
