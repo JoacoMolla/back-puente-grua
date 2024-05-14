@@ -16,12 +16,13 @@ const EstadoTurnoModel = require("./estadoTurno.js");
 
 
 const sequelize = new Sequelize(
-  'puentegrua',
-  'root',
-  'root',
+  process.env.DATABASE_BANK,
+  process.env.DATABASE_USERNAME,
+  process.env.DATABASE_PASSWORD,
   {
     dialect: 'mariadb',
     host: 'localhost',
+    database: 'puentegrua',
     timezone: '-03:00'
   });
 
