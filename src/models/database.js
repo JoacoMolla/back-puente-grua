@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize');
 require('dotenv').config()
+const Sequelize = require('sequelize');
 
 // Tablas
 const AdministradorModel = require("./administrador.js");
@@ -14,11 +14,10 @@ const UsuarioModel = require("./usuarios.js");
 const DetalleTurnoModel = require("./detalleTurno.js");
 const EstadoTurnoModel = require("./estadoTurno.js");
 
-
 const sequelize = new Sequelize(
-  process.env.DATABASE_BANK,
-  process.env.DATABASE_USERNAME,
-  process.env.DATABASE_PASSWORD,
+  'PuenteGrua',
+  'root',
+  'root',
   {
     dialect: 'mariadb',
     host: 'localhost',

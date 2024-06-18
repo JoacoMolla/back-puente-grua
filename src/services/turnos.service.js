@@ -89,8 +89,8 @@ const getAll = async () => {
             fechaActual.getDate() == fechaInicioTurno.getDate() &&
             fechaActual.getMonth() == fechaInicioTurno.getMonth() &&
             fechaActual.getFullYear() == fechaInicioTurno.getFullYear() &&
-            fechaActual.getHours() >= fechaInicioTurno.getHours() &&
-            fechaActual.getMinutes() <= fechaInicioTurno.getMinutes()
+            fechaActual.getHours() >= fechaInicioTurno.getHours()
+
         )
     })
     .map((t) => {
@@ -353,8 +353,8 @@ const findAllTurnosCreadosParaHoy = async () => {
             fechaActual.getDate() == fechaInicioTurno.getDate() &&
             fechaActual.getMonth() == fechaInicioTurno.getMonth() &&
             fechaActual.getFullYear() == fechaInicioTurno.getFullYear() &&
-            fechaActual.getHours() >= fechaInicioTurno.getHours() &&
-            fechaActual.getMinutes() < fechaInicioTurno.getMinutes()
+            fechaActual.getHours() >= fechaInicioTurno.getHours()
+
         )
     })
     .map((t) => {
@@ -388,6 +388,8 @@ const getSiguiente = async () => {
             menorDiferenciaHoras = diferenciaHoras;
         }
     }
+
+    updateTurnoEjecutado(turno.idTurno, 'Turno ejecutado');
     
     return {
         idTurno: turno.idTurno,
