@@ -89,7 +89,7 @@ const getAll = async () => {
             fechaActual.getDate() == fechaInicioTurno.getDate() &&
             fechaActual.getMonth() == fechaInicioTurno.getMonth() &&
             fechaActual.getFullYear() == fechaInicioTurno.getFullYear() &&
-            fechaActual.getHours() >= fechaInicioTurno.getHours()
+            fechaActual.getHours() <= fechaInicioTurno.getHours()
 
         )
     })
@@ -353,7 +353,7 @@ const findAllTurnosCreadosParaHoy = async () => {
             fechaActual.getDate() == fechaInicioTurno.getDate() &&
             fechaActual.getMonth() == fechaInicioTurno.getMonth() &&
             fechaActual.getFullYear() == fechaInicioTurno.getFullYear() &&
-            fechaActual.getHours() >= fechaInicioTurno.getHours()
+            fechaActual.getHours() <= fechaInicioTurno.getHours()
 
         )
     })
